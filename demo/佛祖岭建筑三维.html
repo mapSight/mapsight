@@ -24,86 +24,321 @@
 </head>
 
 <body scroll="no">
-    <div id="mapObj" style="width:100%;height:100%;"></div>
-    <script type="text/javascript" src="../libs/maptalks/maptalks.min.js"></script>
-    <script type="text/javascript" src="../libs/maptalks/maptalks.webgl.min.js"></script>
-    <script type="text/javascript" src="../libs/maptalks/地块.js"></script>
-    <script type="text/javascript">
-        var center = [114.43944445432024,30.44326443351204];
-        var map = new maptalks.Map('mapObj', {
-            center: center,
-            zoom: 16,
-            pitch: 52,
-            baseLayer: new maptalks.TileLayer('tile', {
-                'urlTemplate': 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png',
-                'subdomains': ['a', 'b', 'c', 'd']
-            }),
-            attribution: {
-                content: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
-            }
-        });
+<div id="mapObj" style="width:100%;height:100%;"></div>
+<div id="main" style="width: 600px;height:400px;position: absolute; bottom: 0px; left: 0px"></div>
+<script type="text/javascript" src="../libs/maptalks/echarts.min.js"></script>
+<script type="text/javascript" src="../libs/maptalks/maptalks.min.js"></script>
+<script type="text/javascript" src="../libs/maptalks/maptalks.webgl.min.js"></script>
+<script type="text/javascript" src="../libs/maptalks/maptalks.e3.js"></script>
+<script type="text/javascript" src="../libs/maptalks/地块.js"></script>
+<script type="text/javascript">
+    var center = [114.43944445432024, 30.44326443351204];
+    var map = new maptalks.Map('mapObj', {
+        center: center,
+        zoom: 16,
+        pitch: 52,
+        baseLayer: new maptalks.TileLayer('tile', {
+            'urlTemplate': 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png',
+            'subdomains': ['a', 'b', 'c', 'd']
+        }),
+        attribution: {
+            content: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        }
+    });
 
-        var symbol = {
-            'polygonOpacity': 1,
-            'polygonFill': 'rgba(0, 255, 0, 1)'
+    map.on("click", function (e) {
+        console.log(e);
+    });
+
+    var symbol = {
+        'polygonOpacity': 1,
+        'polygonFill': 'rgba(0, 255, 0, 1)'
+    };
+
+    var nums = 0;
+
+    datajson.features.forEach(function (f) {
+        f.properties.height *= 10;
+        nums++;
+    });
+
+    new maptalks.control.Attribution({
+        position: 'top-right',
+        content: '<div class="heading">' + nums + 'buildings in fozuling</div>'
+    }).addTo(map);
+
+
+    var buildingLayer = new maptalks.ExtrudePolygonLayer('buildings', datajson.features, {
+        'forceRenderOnMoving': true,
+        'ambientLight': [0, 0, 0]
+    })
+        .setStyle([{
+            filter: ['==', 'height', 30],
+            symbol: {
+                'polygonFill': '#bbb'
+            }
+        },
+            {
+                filter: ['==', 'height', 50],
+                symbol: {
+                    'polygonFill': 'rgba(0, 255, 0, 1)'
+                }
+            },
+            {
+                filter: ['==', 'height', 80],
+                symbol: {
+                    'polygonFill': 'rgba(255, 255, 0, 1)'
+                }
+            },
+            {
+                filter: ['==', 'height', 100],
+                symbol: {
+                    'polygonFill': 'rgba(0, 255, 255, 1)'
+                }
+            },
+            {
+                filter: ['==', 'height', 150],
+                symbol: {
+                    'polygonFill': 'rgba(0, 255, 255, 1)'
+                }
+            },
+            {
+                filter: true,
+                symbol: {
+                    'polygonFill': '#bbb'
+                }
+            }
+        ])
+        .addTo(map);
+
+    var e3Layer = new maptalks.E3Layer('e3', getECOption())
+        .addTo(map);
+
+    function getECOption() {
+        var geoCoordMap = {
+            '佛祖岭': [114.44142630270176, 30.428516813075106],
+            '街道办': [114.4653827579765, 30.474759831507384]
         };
 
-        var nums = 0;
+        var BJData = [
+            [{name: '佛祖岭'}, {name: '街道办', value: 95}]
+        ];
 
-        datajson.features.forEach(function (f) {
-            f.properties.height *= 10;
-            nums++;
+        var planePath = 'path://M1705.06,1318.313v-89.254l-319.9-221.799l0.073-208.063c0.521-84.662-26.629-121.796-63.961-121.' +
+            '491c-37.332-0.305-64.482,36.829-63.961,121.491l0.073,208.063l-319.9,221.799v89.254l330.343-157.288l12.238,241.308l-134.449,' +
+            '92.931l0.531,42.034l175.125-42.917l175.125,42.917l0.531-42.034l-134.449-92.931l12.238-241.308L1705.06,1318.313z';
+
+        var convertData = function (data) {
+            var res = [];
+            for (var i = 0; i < data.length; i++) {
+                var dataItem = data[i];
+                var fromCoord = geoCoordMap[dataItem[0].name];
+                var toCoord = geoCoordMap[dataItem[1].name];
+                if (fromCoord && toCoord) {
+                    res.push({
+                        fromName: dataItem[0].name,
+                        toName: dataItem[1].name,
+                        coords: [fromCoord, toCoord]
+                    });
+                }
+            }
+            return res;
+        };
+
+        var color = ['#a6c84c', '#ffa022', '#46bee9'];
+        var series = [];
+        [['佛祖岭', BJData]].forEach(function (item, i) {
+            series.push({
+                    name: item[0],
+                    type: 'lines',
+                    zlevel: 1,
+                    effect: {
+                        show: true,
+                        period: 6,
+                        trailLength: 0.7,
+                        color: '#fff',
+                        symbolSize: 3
+                    },
+                    lineStyle: {
+                        normal: {
+                            color: color[i],
+                            width: 0,
+                            curveness: 0.2
+                        }
+                    },
+                    data: convertData(item[1])
+                },
+                {
+                    name: item[0],
+                    type: 'lines',
+                    zlevel: 2,
+                    effect: {
+                        show: true,
+                        period: 6,
+                        trailLength: 0,
+                        symbol: planePath,
+                        symbolSize: 15
+                    },
+                    lineStyle: {
+                        normal: {
+                            color: color[i],
+                            width: 1,
+                            opacity: 0.4,
+                            curveness: 0.2
+                        }
+                    },
+                    data: convertData(item[1])
+                },
+                {
+                    name: item[0],
+                    type: 'effectScatter',
+                    coordinateSystem: 'geo',
+                    zlevel: 2,
+                    rippleEffect: {
+                        brushType: 'stroke'
+                    },
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'right',
+                            formatter: '{b}'
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return val[2] / 8;
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: color[i]
+                        }
+                    },
+                    data: item[1].map(function (dataItem) {
+                        return {
+                            name: dataItem[1].name,
+                            value: geoCoordMap[dataItem[1].name].concat([dataItem[1].value])
+                        };
+                    })
+                });
         });
 
-        new maptalks.control.Attribution({
-            position: 'top-right',
-            content: '<div class="heading">'+ nums +'buildings in fozuling</div>'
-        }).addTo(map);
+        return {
+            tooltip: {
+                trigger: 'item'
+            },
+            series: series
+        };
+    }
+
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: 'ECharts 入门示例',
+            textStyle: {
+                color: "#fff"
+            }
+        },
+        tooltip: {},
+        legend: {
+            data: ['销量']
+        },
+        xAxis: {
+            data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"],
+            axisLabel: {
+                color: "#fff"
+            }
+        },
+        yAxis: {
+            axisLabel: {
+                color: "#fff"
+            }
+        },
+        series: [{
+            name: '销量',
+            type: 'bar',
+            data: [5, 20, 36, 10, 10, 20]
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
 
 
-        var buildingLayer = new maptalks.ExtrudePolygonLayer('buildings', datajson.features, {
-                'forceRenderOnMoving': true,
-                'ambientLight': [0, 0, 0]
-            })
-            .setStyle([{
-                    filter: ['==', 'height', 30],
-                    symbol: {
-                        'polygonFill': '#bbb'
-                    }
-                },
-                {
-                    filter: ['==', 'height', 50],
-                    symbol: {
-                        'polygonFill': 'rgba(0, 255, 0, 1)'
-                    }
-                },
-                {
-                    filter: ['==', 'height', 80],
-                    symbol: {
-                        'polygonFill': 'rgba(255, 255, 0, 1)'
-                    }
-                },
-                {
-                    filter: ['==', 'height', 100],
-                    symbol: {
-                        'polygonFill': 'rgba(0, 255, 255, 1)'
-                    }
-                },
-                {
-                    filter: ['==', 'height', 150],
-                    symbol: {
-                        'polygonFill': 'rgba(0, 255, 255, 1)'
-                    }
-                },
-                {
-                    filter: true,
-                    symbol: {
-                        'polygonFill': '#bbb'
-                    }
-                }
-            ])
-            .addTo(map);
-    </script>
+    var bearing = 0;
+    changeView();
+
+    function changeView() {
+        bearing += 0.1;
+        map.setBearing(bearing);
+        if (true) {
+            requestAnimationFrame(changeView);
+        }
+    }
+
+    var label = new maptalks.Label('这是一个兴趣点',
+        [114.43408023528264, 30.441071006748956],
+        {
+            'draggable': true,
+            'textSymbol': {
+                'textFaceName': 'monospace',
+                'textFill': '#34495e',
+                'textHaloFill': '#fff',
+                'textHaloRadius': 4,
+                'textSize': 18,
+                'textWeight': 'bold',
+                'textVerticalAlignment': 'top'
+            }
+        });
+    new maptalks.VectorLayer('vector', [label]).addTo(map);
+
+
+    var line = new maptalks.LineString([
+        [114.44549546619805, 30.44180842751078],
+        [114.44437314095661, 30.44184017057037],
+        [114.44321531005517, 30.44179260003832],
+        [114.44189460594657, 30.44168262257633],
+        [114.44132920130312, 30.44333449477434],
+        [114.44091638950249, 30.44459896518103],
+        [114.43962745040858, 30.44865500262673],
+        [114.43959977067982, 30.44866181002234],
+        [114.43749901801516, 30.44819650107567],
+        [114.43556224657596, 30.44780064824837],
+        [114.43452094048041, 30.45056865769717],
+        [114.43312135883231, 30.45415484039208],
+        [114.44919207126907, 30.45718922816362],
+        [114.44685768117859, 30.46364660074411],
+        [114.44387730573249, 30.46302816887365],
+        [114.44315440452885, 30.46527411935537]
+    ], {
+        visible: false,
+        arrowStyle: 'classic',
+        arrowPlacement: 'vertex-last',
+        symbol: {
+            'lineColor': '#ff0000',
+            'lineWidth': 2
+        }
+    });
+
+    new maptalks.VectorLayer('line', line).addTo(map);
+
+    replay();
+
+    function replay() {
+        line.hide();
+        //line's animateShow
+        line.animateShow({
+            duration: 20000,
+            easing: 'out'
+        }, function (frame) {
+            if (frame.state.playState === 'finished') {
+                replay();
+            }
+        });
+    }
+
+</script>
 </body>
 
 </html>
