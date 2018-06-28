@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>高亮marker</title>
+    <link rel="stylesheet" href="../libs/leaflet/leaflet.css">
+    <link rel="stylesheet" href="../libs/leaflet/leaflet.marker.highlight.css">
+    <script src="../libs/leaflet/leaflet.js"></script>
+    <script src="../libs/leaflet/leaflet.marker.highlight.js"></script>
+    <style>
+        html,
+        body,
+        #map {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script>
+        var map = L.map('map', {
+            center: [30.446583,114.450078],
+            zoom: 18
+        });
+        // 添加osm为底图
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        L.marker([30.446583,114.450078], {
+            highlight: "permanent"
+        }).addTo(map);
+        L.marker([30.44563, 114.450882], {
+            highlight: "temporary"
+        }).addTo(map);
+        L.marker([30.444823, 114.449931]).addTo(map);
+    </script>
+</body>
+
+</html>

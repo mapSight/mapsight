@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../libs/maptalks/maptalks.css">
+    <style type="text/css">
+        html,
+        body {
+            margin: 0px;
+            height: 100%;
+        }
+
+        .heading {
+            background-color: #34495e;
+            color: #fff;
+            padding: 8px 8px;
+            font: 24px sans-serif;
+        }
+    </style>
+    <title>Buildings Extrusion</title>
+</head>
+
+<body scroll="no">
+    <div id="mapObj" style="width:100%;height:100%;"></div>
+    <script type="text/javascript" src="../libs/maptalks/maptalks.min.js"></script>
+    <script type="text/javascript" src="../libs/maptalks/maptalks.webgl.min.js"></script>
+    <script type="text/javascript" src="../libs/maptalks/地块.js"></script>
+    <script type="text/javascript">
+        var center = [114.43944445432024,30.44326443351204];
+        var map = new maptalks.Map('mapObj', {
+            center: center,
+            zoom: 16,
+            pitch: 52,
+            baseLayer: new maptalks.TileLayer('tile', {
+                'urlTemplate': 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png',
+                'subdomains': ['a', 'b', 'c', 'd']
+            }),
+            attribution: {
+                content: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            }
+        });
+
+        var symbol = {
+            'polygonOpacity': 1,
+            'polygonFill': 'rgba(0, 255, 0, 1)'
+        };
+
+        var nums = 0;
+
+        datajson.features.forEach(function (f) {
+            f.properties.height *= 10;
+            nums++;
+        });
+
+        new maptalks.control.Attribution({
+            position: 'top-right',
+            content: '<div class="heading">'+ nums +'buildings in fozuling</div>'
+        }).addTo(map);
+
+
+        var buildingLayer = new maptalks.ExtrudePolygonLayer('buildings', datajson.features, {
+                'forceRenderOnMoving': true,
+                'ambientLight': [0, 0, 0]
+            })
+            .setStyle([{
+                    filter: ['==', 'height', 30],
+                    symbol: {
+                        'polygonFill': '#bbb'
+                    }
+                },
+                {
+                    filter: ['==', 'height', 50],
+                    symbol: {
+                        'polygonFill': 'rgba(0, 255, 0, 1)'
+                    }
+                },
+                {
+                    filter: ['==', 'height', 80],
+                    symbol: {
+                        'polygonFill': 'rgba(255, 255, 0, 1)'
+                    }
+                },
+                {
+                    filter: ['==', 'height', 100],
+                    symbol: {
+                        'polygonFill': 'rgba(0, 255, 255, 1)'
+                    }
+                },
+                {
+                    filter: ['==', 'height', 150],
+                    symbol: {
+                        'polygonFill': 'rgba(0, 255, 255, 1)'
+                    }
+                },
+                {
+                    filter: true,
+                    symbol: {
+                        'polygonFill': '#bbb'
+                    }
+                }
+            ])
+            .addTo(map);
+    </script>
+</body>
+
+</html>
