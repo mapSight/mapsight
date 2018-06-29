@@ -338,6 +338,49 @@
         });
     }
 
+    var point = new maptalks.Marker(
+        [114.45887007838064, 30.45193445860312],
+        {
+            symbol : {
+                'markerType' : 'ellipse',
+                'markerFill' : {
+                    'type' : 'radial',
+                    'colorStops' : [
+                        [0.00, 'rgba(216,115,149,0)'],
+                        [0.50, 'rgba(216,115,149,1)'],
+                        [1.00, 'rgba(216,115,149,1)']
+                    ]
+                },
+                'markerLineWidth' : 0,
+                'markerWidth' : 10,
+                'markerHeight' : 10
+            }
+        }
+    );
+
+    var player = point.animate({
+        'symbol':{
+            'markerWidth' : 100,
+            'markerHeight' : 100
+        }
+    },{
+        'duration' : 1500,
+        'easing' : 'inAndOut',
+        'repeat' : true
+    },function (frame) {
+        if (frame.state.playState === 'finished'){
+            console.log('animation finished');
+        }
+    });
+
+    player.play();
+
+    point.on('click',function (params) {
+        alert('报警');
+    });
+
+    new maptalks.VectorLayer('vectormarker',point).addTo(map);
+
 </script>
 </body>
 
