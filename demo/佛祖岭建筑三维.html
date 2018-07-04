@@ -25,7 +25,8 @@
 
 <body scroll="no">
 <div id="mapObj" style="width:100%;height:100%;"></div>
-<div id="main" style="width: 600px;height:400px;position: absolute; bottom: 0px; left: 0px"></div>
+<div id="main" style="width: 600px;height:400px;position: absolute; top: 0px; left: 0px"></div>
+<div id="main2" style="width: 600px;height:400px;position: absolute; top: 400px; left: 0px"></div>
 <script type="text/javascript" src="../libs/maptalks/echarts.min.js"></script>
 <script type="text/javascript" src="../libs/maptalks/maptalks.min.js"></script>
 <script type="text/javascript" src="../libs/maptalks/maptalks.webgl.min.js"></script>
@@ -58,14 +59,14 @@
     var nums = 0;
 
     datajson.features.forEach(function (f) {
-        f.properties.height *= 10;
+        // f.properties.height *= 10;
         nums++;
     });
 
-    new maptalks.control.Attribution({
-        position: 'top-right',
-        content: '<div class="heading">' + nums + 'buildings in fozuling</div>'
-    }).addTo(map);
+    // new maptalks.control.Attribution({
+    //     position: 'top-right',
+    //     content: '<div class="heading">' + nums + 'buildings in fozuling</div>'
+    // }).addTo(map);
 
 
     var buildingLayer = new maptalks.ExtrudePolygonLayer('buildings', datajson.features, {
@@ -73,31 +74,31 @@
         'ambientLight': [0, 0, 0]
     })
         .setStyle([{
-            filter: ['==', 'height', 30],
+            filter: ['==', 'height', 3],
             symbol: {
                 'polygonFill': '#bbb'
             }
         },
             {
-                filter: ['==', 'height', 50],
+                filter: ['==', 'height', 5],
                 symbol: {
                     'polygonFill': 'rgba(0, 255, 0, 1)'
                 }
             },
             {
-                filter: ['==', 'height', 80],
+                filter: ['==', 'height', 8],
                 symbol: {
                     'polygonFill': 'rgba(255, 255, 0, 1)'
                 }
             },
             {
-                filter: ['==', 'height', 100],
+                filter: ['==', 'height', 10],
                 symbol: {
                     'polygonFill': 'rgba(0, 255, 255, 1)'
                 }
             },
             {
-                filter: ['==', 'height', 150],
+                filter: ['==', 'height', 15],
                 symbol: {
                     'polygonFill': 'rgba(0, 255, 255, 1)'
                 }
@@ -117,11 +118,17 @@
     function getECOption() {
         var geoCoordMap = {
             '佛祖岭': [114.44142630270176, 30.428516813075106],
+            '佛祖岭B区': [114.43933035669556, 30.443217780356548],
+            '佛祖岭C区': [114.43768627277223, 30.44727623308617],
+            '佛祖岭E区': [114.45638211488904, 30.440254752331015],
             '街道办': [114.4653827579765, 30.474759831507384]
         };
 
         var BJData = [
-            [{name: '佛祖岭'}, {name: '街道办', value: 95}]
+            [{name: '佛祖岭'}, {name: '街道办', value: 95}],
+            [{name: '佛祖岭'}, {name: '佛祖岭B区', value: 50}],
+            [{name: '佛祖岭'}, {name: '佛祖岭C区', value: 60}],
+            [{name: '佛祖岭'}, {name: '佛祖岭E区', value: 80}]
         ];
 
         var planePath = 'path://M1705.06,1318.313v-89.254l-319.9-221.799l0.073-208.063c0.521-84.662-26.629-121.796-63.961-121.' +
@@ -235,14 +242,19 @@
     // 指定图表的配置项和数据
     var option = {
         title: {
-            text: 'ECharts 入门示例',
+            text: '进货量销量对比图',
+            left: 'center',
             textStyle: {
                 color: "#fff"
             }
         },
         tooltip: {},
         legend: {
-            data: ['销量']
+            data: ['销量','进货量'],
+            textStyle:{
+                color:"#fff"
+            },
+            top:25
         },
         xAxis: {
             data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"],
@@ -259,23 +271,147 @@
             name: '销量',
             type: 'bar',
             data: [5, 20, 36, 10, 10, 20]
+        },{
+            name: '进货量',
+            type: 'bar',
+            data: [10, 20, 40, 12, 10, 25],
+            itemStyle:{
+                normal:{
+                    color:'#f5b031'
+                }
+            },
         }]
     };
 
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
 
+    var index = 0; //播放所在下标
+    setInterval(function() {
+
+        if (index % 3 == 0){
+            myChart.dispatchAction({
+                type: 'legendSelect',       //选中图例。
+                name: '销量'
+            });
+            myChart.dispatchAction({
+                type: 'legendSelect',       //选中图例。
+                name: '进货量'
+            });
+        }else if (index % 3 == 1){
+            myChart.dispatchAction({
+                type: 'legendSelect',       //选中图例。
+                name: '销量'
+            });
+            myChart.dispatchAction({
+                type: 'legendUnSelect',       //选中图例。
+                name: '进货量'
+            });
+        }else if (index % 3 == 2){
+            myChart.dispatchAction({
+                type: 'legendUnSelect',       //选中图例。
+                name: '销量'
+            });
+            myChart.dispatchAction({
+                type: 'legendSelect',       //选中图例。
+                name: '进货量'
+            });
+        }
+
+
+        index++;
+        // if(index > 6) {
+        //     index = 0;
+        // }
+    }, 2000);
+
+    var myChart2 = echarts.init(document.getElementById('main2'));
+
+    var option2 = {
+        title: {
+            text: '天气情况统计',
+            left: 'center',
+            textStyle: {
+                color: "#fff"
+            }
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            // orient: 'vertical',
+            // top: 'middle',
+            bottom: 10,
+            left: 'center',
+            data: ['西凉', '益州','兖州','荆州','幽州'],
+            textStyle:{
+                color:"#fff"
+            }
+        },
+        series : [
+            {
+                type: 'pie',
+                radius : '65%',
+                center: ['50%', '50%'],
+                selectedMode: 'single',
+                data:[
+                    {value:1548,name: '幽州'},
+                    {value:535, name: '荆州'},
+                    {value:510, name: '兖州'},
+                    {value:634, name: '益州'},
+                    {value:735, name: '西凉'}
+                ],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+
+    var index2 = 0; //播放所在下标
+    setInterval(function() {
+        myChart2.dispatchAction({
+            type: 'pieUnSelect',        //取消选中指定的饼图扇形。
+            type: 'pieToggleSelect',    //切换指定的饼图扇形选中状态。
+            type: 'pieSelect',          //选中指定的饼图扇形。
+            seriesIndex: 0,
+            dataIndex: index2
+        });
+        index2++;
+        if(index2 > 5) {
+            index2 = 0;
+        }
+    }, 2000);
+
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart2.setOption(option2);
 
     var bearing = 0;
-    changeView();
-
-    function changeView() {
-        bearing += 0.1;
-        map.setBearing(bearing);
-        if (true) {
-            requestAnimationFrame(changeView);
+    var paused = false;
+    map.on("zoomend", function () {
+        if (map.getZoom() <= 15){
+            changeView();
+            paused = false;
+            function changeView() {
+                bearing += 0.1;
+                map.setBearing(bearing);
+                if (!paused) {
+                    requestAnimationFrame(changeView);
+                }
+            }
+        }else{
+            requestAnimationFrame(function () {
+                paused = true;
+            });
         }
-    }
+    });
+
 
     var label = new maptalks.Label('这是一个兴趣点',
         [114.43408023528264, 30.441071006748956],
@@ -380,6 +516,59 @@
     });
 
     new maptalks.VectorLayer('vectormarker',point).addTo(map);
+
+
+    maptalks.Ajax.getJSON('lines-bus.json', function(err, data) {
+        var hStep = 0.01;
+        var busLines = [].concat.apply([], data.map(function (busLine, idx) {
+            var prevPt = [];
+            var points = [];
+            for (var i = 0; i < busLine.length; i += 2) {
+                var pt = [busLine[i], busLine[i + 1]];
+                if (i > 0) {
+                    pt = [
+                        prevPt[0] + pt[0],
+                        prevPt[1] + pt[1]
+                    ];
+                }
+                prevPt = pt;
+
+                points.push([pt[0] / 1e4, pt[1] / 1e4]);
+            }
+            return {
+                'coords': points,
+                'lineStyle': {
+                    'normal': {
+                        'color': echarts.color.modifyHSL('#5A94DF', Math.round(hStep * idx))
+                    }
+                }
+            };
+        }));
+        var ecOption = {
+            'series': [{
+                'type': 'lines',
+                'polyline': true,
+                'data': busLines,
+                'lineStyle': {
+                    'normal': {
+                        'width': 0
+                    }
+                },
+                'effect': {
+                    'constantSpeed': 100,
+                    'show': true,
+                    'trailLength': 0.5,
+                    'symbolSize': 1.5
+                },
+                'zlevel': 1
+            }]
+        };
+        new maptalks.E3Layer('bus', ecOption, {
+            hideOnZooming: true,
+            hideOnRotating: true,
+            hideOnMoving: true
+        }).addTo(map);
+    });
 
 </script>
 </body>
