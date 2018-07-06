@@ -381,6 +381,31 @@
 
     new maptalks.VectorLayer('vectormarker',point).addTo(map);
 
+    var particles = new maptalks.ParticleLayer('c',{
+        'forceRenderOnMoving' : true
+    });
+
+    var center = map.getCenter();
+    var radius = 1000;
+    particles.getParticles = function(t){
+        var point = map.coordinateToContainerPoint(center);
+        var angle = (t / 16 % 360)*Math.PI/180;
+        var pxLen = map.distanceToPixel(radius,radius);
+        var r = pxLen.width;
+        console.log("radius: "+r);
+        var x = r * Math.cos(angle);
+        var y = r * Math.sin(angle);
+        return [
+            {
+                point : point.add(x,y),
+                r : 4,
+                color : 'rgb(135,196,240)'
+            }
+        ];
+    };
+
+    map.addLayer(particles);
+
 </script>
 </body>
 
