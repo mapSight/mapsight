@@ -32,6 +32,12 @@
 <script type="text/javascript" src="../libs/maptalks/maptalks.webgl.min.js"></script>
 <script type="text/javascript" src="../libs/maptalks/maptalks.e3.js"></script>
 <script type="text/javascript" src="../libs/maptalks/地块.js"></script>
+<script type="text/javascript" src="../libs/threejs/three.min.js"></script>
+<script type="text/javascript" src="../libs/threejs/maptalks.three.min.js"></script>
+<script type="text/javascript" src="../libs/threejs/DDSLoader.js"></script>
+<script type="text/javascript" src="../libs/threejs/MTLLoader.js"></script>
+<script type="text/javascript" src="../libs/threejs/OBJLoader.js"></script>
+
 <script type="text/javascript">
     var center = [114.43944445432024, 30.44326443351204];
     var map = new maptalks.Map('mapObj', {
@@ -517,31 +523,6 @@
 
     new maptalks.VectorLayer('vectormarker',point).addTo(map);
 
-    var particles = new maptalks.ParticleLayer('c',{
-        'forceRenderOnMoving' : true
-    });
-
-    var center = map.getCenter();
-    var radius = 1000;
-    particles.getParticles = function(t){
-        var point = map.coordinateToContainerPoint(center);
-        var angle = (t / 16 % 360)*Math.PI/180;
-        var pxLen = map.distanceToPixel(radius,radius);
-        var r = pxLen.width;
-        console.log("radius: "+r);
-        var x = r * Math.cos(angle);
-        var y = r * Math.sin(angle);
-        return [
-            {
-                point : point.add(x,y),
-                r : 4,
-                color : 'rgb(135,196,240)'
-            }
-        ];
-    };
-
-    map.addLayer(particles);
-
     maptalks.Ajax.getJSON('lines-bus.json', function(err, data) {
         var hStep = 0.01;
         var busLines = [].concat.apply([], data.map(function (busLine, idx) {
@@ -593,6 +574,56 @@
             hideOnMoving: true
         }).addTo(map);
     });
+
+    THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+
+var mtlLoaded = false;
+// the ThreeLayer to draw buildings
+var threeLayer = new maptalks.ThreeLayer('t');
+// prepare data, load mtl into three scene.
+threeLayer.prepareToDraw = function (gl, scene, camera) {
+    var light = new THREE.PointLight( 0xffffff );
+    light.position.copy(camera.position);
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0xffffff));// soft white light
+    var mtlLoader = new THREE.MTLLoader();
+    mtlLoader.setPath( '../libs/threejs/try/' );
+    mtlLoader.load( 'anjianju.mtl', function( materials ) {
+        materials.preload();
+        var objLoader = new THREE.OBJLoader();
+        objLoader.setMaterials( materials );
+        objLoader.setPath( '../libs/threejs/try/' );
+        objLoader.load( 'anjianju.obj', function ( object ) {
+            object.traverse( function ( child ) {
+                if ( child instanceof THREE.Mesh ) {
+                    child.scale.set(20, 20, 20);
+                    child.rotation.set(Math.PI * 3 / 2, 0, 0);
+                }
+            });
+            var v = threeLayer.coordinateToVector3(map.getCenter());
+            object.position.x = v.x;
+            object.position.y = v.y;
+            object.position.z = v.z;
+            scene.add(object);
+            mtlLoaded = true;
+            threeLayer.renderScene();
+        });
+    });
+};
+
+threeLayer.draw = function () {
+    if (mtlLoaded) {
+        this.renderScene();
+    }
+};
+
+threeLayer.drawOnInteracting = function () {
+    if (mtlLoaded) {
+        this.renderScene();
+    }
+};
+
+threeLayer.addTo(map);
 
 </script>
 </body>
