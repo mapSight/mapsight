@@ -575,7 +575,8 @@
         }).addTo(map);
     });
 
-    THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+
+THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
 
 var mtlLoaded = false;
 // the ThreeLayer to draw buildings
@@ -596,11 +597,11 @@ threeLayer.prepareToDraw = function (gl, scene, camera) {
         objLoader.load( 'anjianju.obj', function ( object ) {
             object.traverse( function ( child ) {
                 if ( child instanceof THREE.Mesh ) {
-                    child.scale.set(20, 20, 20);
-                    child.rotation.set(Math.PI * 3 / 2, 0, 0);
+                    child.scale.set(20, 20, 20);//调整加载模型的缩放比例
+                    child.rotation.set(Math.PI * 3 / 2, 0, 0);//调整模型的姿态，第二参数为绕模型Z轴旋转角度，参数单位为弧度
                 }
             });
-            var v = threeLayer.coordinateToVector3(map.getCenter());
+            var v = threeLayer.coordinateToVector3(new maptalks.Coordinate(114.46639910902582,30.451765835937152));
             object.position.x = v.x;
             object.position.y = v.y;
             object.position.z = v.z;
