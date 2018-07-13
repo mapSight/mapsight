@@ -24,67 +24,63 @@
 </head>
 
 <body scroll="no">
-<div id="mapObj" style="width:100%;height:100%;"></div>
-<div id="main" style="width: 600px;height:400px;position: absolute; top: 0px; left: 0px"></div>
-<div id="main2" style="width: 600px;height:400px;position: absolute; top: 400px; left: 0px"></div>
-<script type="text/javascript" src="../libs/maptalks/echarts.min.js"></script>
-<script type="text/javascript" src="../libs/maptalks/maptalks.min.js"></script>
-<script type="text/javascript" src="../libs/maptalks/maptalks.webgl.min.js"></script>
-<script type="text/javascript" src="../libs/maptalks/maptalks.e3.js"></script>
-<script type="text/javascript" src="../libs/maptalks/地块.js"></script>
-<script type="text/javascript" src="../libs/threejs/three.min.js"></script>
-<script type="text/javascript" src="../libs/threejs/maptalks.three.min.js"></script>
-<script type="text/javascript" src="../libs/threejs/DDSLoader.js"></script>
-<script type="text/javascript" src="../libs/threejs/MTLLoader.js"></script>
-<script type="text/javascript" src="../libs/threejs/OBJLoader.js"></script>
+    <div id="mapObj" style="width:100%;height:100%;"></div>
+    <div id="main" style="width: 600px;height:400px;position: absolute; top: 0px; left: 0px"></div>
+    <div id="main2" style="width: 600px;height:400px;position: absolute; top: 400px; left: 0px"></div>
+    <script type="text/javascript" src="../libs/maptalks/echarts.min.js"></script>
+    <script type="text/javascript" src="../libs/maptalks/maptalks.min.js"></script>
+    <script type="text/javascript" src="../libs/maptalks/maptalks.webgl.min.js"></script>
+    <script type="text/javascript" src="../libs/maptalks/maptalks.e3.js"></script>
+    <script type="text/javascript" src="../libs/maptalks/地块.js"></script>
+    <script type="text/javascript" src="../libs/threejs/three.min.js"></script>
+    <script type="text/javascript" src="../libs/threejs/maptalks.three.min.js"></script>
+    <script type="text/javascript" src="../libs/threejs/DDSLoader.js"></script>
+    <script type="text/javascript" src="../libs/threejs/MTLLoader.js"></script>
+    <script type="text/javascript" src="../libs/threejs/OBJLoader.js"></script>
 
-<script type="text/javascript">
-    var center = [114.43944445432024, 30.44326443351204];
-    var map = new maptalks.Map('mapObj', {
-        center: center,
-        zoom: 16,
-        pitch: 52,
-        baseLayer: new maptalks.TileLayer('tile', {
-            'urlTemplate': 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png',
-            'subdomains': ['a', 'b', 'c', 'd']
-        }),
-        attribution: {
-            content: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        }
-    });
-
-    map.on("click", function (e) {
-        console.log(e);
-    });
-
-    var symbol = {
-        'polygonOpacity': 1,
-        'polygonFill': 'rgba(0, 255, 0, 1)'
-    };
-
-    var nums = 0;
-
-    datajson.features.forEach(function (f) {
-        // f.properties.height *= 10;
-        nums++;
-    });
-
-    // new maptalks.control.Attribution({
-    //     position: 'top-right',
-    //     content: '<div class="heading">' + nums + 'buildings in fozuling</div>'
-    // }).addTo(map);
-
-
-    var buildingLayer = new maptalks.ExtrudePolygonLayer('buildings', datajson.features, {
-        'forceRenderOnMoving': true,
-        'ambientLight': [0, 0, 0]
-    })
-        .setStyle([{
-            filter: ['==', 'height', 3],
-            symbol: {
-                'polygonFill': '#bbb'
+    <script type="text/javascript">
+        var center = [114.43944445432024, 30.44326443351204];
+        var map = new maptalks.Map('mapObj', {
+            center: center,
+            zoom: 16,
+            pitch: 52,
+            baseLayer: new maptalks.TileLayer('tile', {
+                'urlTemplate': 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png',
+                'subdomains': ['a', 'b', 'c', 'd']
+            }),
+            attribution: {
+                content: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
             }
-        },
+        });
+
+        var symbol = {
+            'polygonOpacity': 1,
+            'polygonFill': 'rgba(0, 255, 0, 1)'
+        };
+
+        var nums = 0;
+
+        datajson.features.forEach(function (f) {
+            // f.properties.height *= 10;
+            nums++;
+        });
+
+        // new maptalks.control.Attribution({
+        //     position: 'top-right',
+        //     content: '<div class="heading">' + nums + 'buildings in fozuling</div>'
+        // }).addTo(map);
+
+
+        var buildingLayer = new maptalks.ExtrudePolygonLayer('buildings', datajson.features, {
+            'forceRenderOnMoving': true,
+            'ambientLight': [0, 0, 0]
+        })
+            .setStyle([{
+                filter: ['==', 'height', 3],
+                symbol: {
+                    'polygonFill': '#bbb'
+                }
+            },
             {
                 filter: ['==', 'height', 5],
                 symbol: {
@@ -115,53 +111,53 @@
                     'polygonFill': '#bbb'
                 }
             }
-        ])
-        .addTo(map);
+            ])
+            .addTo(map);
 
-    var e3Layer = new maptalks.E3Layer('e3', getECOption())
-        .addTo(map);
+        var e3Layer = new maptalks.E3Layer('e3', getECOption())
+            .addTo(map);
 
-    function getECOption() {
-        var geoCoordMap = {
-            '佛祖岭': [114.44142630270176, 30.428516813075106],
-            '佛祖岭B区': [114.43933035669556, 30.443217780356548],
-            '佛祖岭C区': [114.43768627277223, 30.44727623308617],
-            '佛祖岭E区': [114.45638211488904, 30.440254752331015],
-            '街道办': [114.4653827579765, 30.474759831507384]
-        };
+        function getECOption() {
+            var geoCoordMap = {
+                '佛祖岭': [114.44142630270176, 30.428516813075106],
+                '佛祖岭B区': [114.43933035669556, 30.443217780356548],
+                '佛祖岭C区': [114.43768627277223, 30.44727623308617],
+                '佛祖岭E区': [114.45638211488904, 30.440254752331015],
+                '街道办': [114.4653827579765, 30.474759831507384]
+            };
 
-        var BJData = [
-            [{name: '佛祖岭'}, {name: '街道办', value: 95}],
-            [{name: '佛祖岭'}, {name: '佛祖岭B区', value: 50}],
-            [{name: '佛祖岭'}, {name: '佛祖岭C区', value: 60}],
-            [{name: '佛祖岭'}, {name: '佛祖岭E区', value: 80}]
-        ];
+            var BJData = [
+                [{ name: '佛祖岭' }, { name: '街道办', value: 95 }],
+                [{ name: '佛祖岭' }, { name: '佛祖岭B区', value: 50 }],
+                [{ name: '佛祖岭' }, { name: '佛祖岭C区', value: 60 }],
+                [{ name: '佛祖岭' }, { name: '佛祖岭E区', value: 80 }]
+            ];
 
-        var planePath = 'path://M1705.06,1318.313v-89.254l-319.9-221.799l0.073-208.063c0.521-84.662-26.629-121.796-63.961-121.' +
-            '491c-37.332-0.305-64.482,36.829-63.961,121.491l0.073,208.063l-319.9,221.799v89.254l330.343-157.288l12.238,241.308l-134.449,' +
-            '92.931l0.531,42.034l175.125-42.917l175.125,42.917l0.531-42.034l-134.449-92.931l12.238-241.308L1705.06,1318.313z';
+            var planePath = 'path://M1705.06,1318.313v-89.254l-319.9-221.799l0.073-208.063c0.521-84.662-26.629-121.796-63.961-121.' +
+                '491c-37.332-0.305-64.482,36.829-63.961,121.491l0.073,208.063l-319.9,221.799v89.254l330.343-157.288l12.238,241.308l-134.449,' +
+                '92.931l0.531,42.034l175.125-42.917l175.125,42.917l0.531-42.034l-134.449-92.931l12.238-241.308L1705.06,1318.313z';
 
-        var convertData = function (data) {
-            var res = [];
-            for (var i = 0; i < data.length; i++) {
-                var dataItem = data[i];
-                var fromCoord = geoCoordMap[dataItem[0].name];
-                var toCoord = geoCoordMap[dataItem[1].name];
-                if (fromCoord && toCoord) {
-                    res.push({
-                        fromName: dataItem[0].name,
-                        toName: dataItem[1].name,
-                        coords: [fromCoord, toCoord]
-                    });
+            var convertData = function (data) {
+                var res = [];
+                for (var i = 0; i < data.length; i++) {
+                    var dataItem = data[i];
+                    var fromCoord = geoCoordMap[dataItem[0].name];
+                    var toCoord = geoCoordMap[dataItem[1].name];
+                    if (fromCoord && toCoord) {
+                        res.push({
+                            fromName: dataItem[0].name,
+                            toName: dataItem[1].name,
+                            coords: [fromCoord, toCoord]
+                        });
+                    }
                 }
-            }
-            return res;
-        };
+                return res;
+            };
 
-        var color = ['#a6c84c', '#ffa022', '#46bee9'];
-        var series = [];
-        [['佛祖岭', BJData]].forEach(function (item, i) {
-            series.push({
+            var color = ['#a6c84c', '#ffa022', '#46bee9'];
+            var series = [];
+            [['佛祖岭', BJData]].forEach(function (item, i) {
+                series.push({
                     name: item[0],
                     type: 'lines',
                     zlevel: 1,
@@ -181,452 +177,474 @@
                     },
                     data: convertData(item[1])
                 },
-                {
-                    name: item[0],
-                    type: 'lines',
-                    zlevel: 2,
-                    effect: {
-                        show: true,
-                        period: 6,
-                        trailLength: 0,
-                        symbol: planePath,
-                        symbolSize: 15
-                    },
-                    lineStyle: {
-                        normal: {
-                            color: color[i],
-                            width: 1,
-                            opacity: 0.4,
-                            curveness: 0.2
-                        }
-                    },
-                    data: convertData(item[1])
-                },
-                {
-                    name: item[0],
-                    type: 'effectScatter',
-                    coordinateSystem: 'geo',
-                    zlevel: 2,
-                    rippleEffect: {
-                        brushType: 'stroke'
-                    },
-                    label: {
-                        normal: {
+                    {
+                        name: item[0],
+                        type: 'lines',
+                        zlevel: 2,
+                        effect: {
                             show: true,
-                            position: 'right',
-                            formatter: '{b}'
-                        }
+                            period: 6,
+                            trailLength: 0,
+                            symbol: planePath,
+                            symbolSize: 15
+                        },
+                        lineStyle: {
+                            normal: {
+                                color: color[i],
+                                width: 1,
+                                opacity: 0.4,
+                                curveness: 0.2
+                            }
+                        },
+                        data: convertData(item[1])
                     },
-                    symbolSize: function (val) {
-                        return val[2] / 8;
-                    },
-                    itemStyle: {
-                        normal: {
-                            color: color[i]
-                        }
-                    },
-                    data: item[1].map(function (dataItem) {
-                        return {
-                            name: dataItem[1].name,
-                            value: geoCoordMap[dataItem[1].name].concat([dataItem[1].value])
-                        };
-                    })
-                });
-        });
-
-        return {
-            tooltip: {
-                trigger: 'item'
-            },
-            series: series
-        };
-    }
-
-    // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById('main'));
-
-    // 指定图表的配置项和数据
-    var option = {
-        title: {
-            text: '进货量销量对比图',
-            left: 'center',
-            textStyle: {
-                color: "#fff"
-            }
-        },
-        tooltip: {},
-        legend: {
-            data: ['销量','进货量'],
-            textStyle:{
-                color:"#fff"
-            },
-            top:25
-        },
-        xAxis: {
-            data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"],
-            axisLabel: {
-                color: "#fff"
-            }
-        },
-        yAxis: {
-            axisLabel: {
-                color: "#fff"
-            }
-        },
-        series: [{
-            name: '销量',
-            type: 'bar',
-            data: [5, 20, 36, 10, 10, 20]
-        },{
-            name: '进货量',
-            type: 'bar',
-            data: [10, 20, 40, 12, 10, 25],
-            itemStyle:{
-                normal:{
-                    color:'#f5b031'
-                }
-            },
-        }]
-    };
-
-    // 使用刚指定的配置项和数据显示图表。
-    myChart.setOption(option);
-
-    var index = 0; //播放所在下标
-    setInterval(function() {
-
-        if (index % 3 == 0){
-            myChart.dispatchAction({
-                type: 'legendSelect',       //选中图例。
-                name: '销量'
+                    {
+                        name: item[0],
+                        type: 'effectScatter',
+                        coordinateSystem: 'geo',
+                        zlevel: 2,
+                        rippleEffect: {
+                            brushType: 'stroke'
+                        },
+                        label: {
+                            normal: {
+                                show: true,
+                                position: 'right',
+                                formatter: '{b}'
+                            }
+                        },
+                        symbolSize: function (val) {
+                            return val[2] / 8;
+                        },
+                        itemStyle: {
+                            normal: {
+                                color: color[i]
+                            }
+                        },
+                        data: item[1].map(function (dataItem) {
+                            return {
+                                name: dataItem[1].name,
+                                value: geoCoordMap[dataItem[1].name].concat([dataItem[1].value])
+                            };
+                        })
+                    });
             });
-            myChart.dispatchAction({
-                type: 'legendSelect',       //选中图例。
-                name: '进货量'
-            });
-        }else if (index % 3 == 1){
-            myChart.dispatchAction({
-                type: 'legendSelect',       //选中图例。
-                name: '销量'
-            });
-            myChart.dispatchAction({
-                type: 'legendUnSelect',       //选中图例。
-                name: '进货量'
-            });
-        }else if (index % 3 == 2){
-            myChart.dispatchAction({
-                type: 'legendUnSelect',       //选中图例。
-                name: '销量'
-            });
-            myChart.dispatchAction({
-                type: 'legendSelect',       //选中图例。
-                name: '进货量'
-            });
-        }
 
-
-        index++;
-        // if(index > 6) {
-        //     index = 0;
-        // }
-    }, 2000);
-
-    var myChart2 = echarts.init(document.getElementById('main2'));
-
-    var option2 = {
-        title: {
-            text: '天气情况统计',
-            left: 'center',
-            textStyle: {
-                color: "#fff"
-            }
-        },
-        tooltip : {
-            trigger: 'item',
-            formatter: "{a} <br/>{b} : {c} ({d}%)"
-        },
-        legend: {
-            // orient: 'vertical',
-            // top: 'middle',
-            bottom: 10,
-            left: 'center',
-            data: ['西凉', '益州','兖州','荆州','幽州'],
-            textStyle:{
-                color:"#fff"
-            }
-        },
-        series : [
-            {
-                type: 'pie',
-                radius : '65%',
-                center: ['50%', '50%'],
-                selectedMode: 'single',
-                data:[
-                    {value:1548,name: '幽州'},
-                    {value:535, name: '荆州'},
-                    {value:510, name: '兖州'},
-                    {value:634, name: '益州'},
-                    {value:735, name: '西凉'}
-                ],
-                itemStyle: {
-                    emphasis: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0, 0, 0, 0.5)'
-                    }
-                }
-            }
-        ]
-    };
-
-    var index2 = 0; //播放所在下标
-    setInterval(function() {
-        myChart2.dispatchAction({
-            type: 'pieUnSelect',        //取消选中指定的饼图扇形。
-            type: 'pieToggleSelect',    //切换指定的饼图扇形选中状态。
-            type: 'pieSelect',          //选中指定的饼图扇形。
-            seriesIndex: 0,
-            dataIndex: index2
-        });
-        index2++;
-        if(index2 > 5) {
-            index2 = 0;
-        }
-    }, 2000);
-
-
-    // 使用刚指定的配置项和数据显示图表。
-    myChart2.setOption(option2);
-
-    var bearing = 0;
-    var paused = false;
-    map.on("zoomend", function () {
-        if (map.getZoom() <= 15){
-            changeView();
-            paused = false;
-            function changeView() {
-                bearing += 0.1;
-                map.setBearing(bearing);
-                if (!paused) {
-                    requestAnimationFrame(changeView);
-                }
-            }
-        }else{
-            requestAnimationFrame(function () {
-                paused = true;
-            });
-        }
-    });
-
-
-    var label = new maptalks.Label('这是一个兴趣点',
-        [114.43408023528264, 30.441071006748956],
-        {
-            'draggable': true,
-            'textSymbol': {
-                'textFaceName': 'monospace',
-                'textFill': '#34495e',
-                'textHaloFill': '#fff',
-                'textHaloRadius': 4,
-                'textSize': 18,
-                'textWeight': 'bold',
-                'textVerticalAlignment': 'top'
-            }
-        });
-    new maptalks.VectorLayer('vector', [label]).addTo(map);
-
-
-    var line = new maptalks.LineString([
-        [114.44549546619805, 30.44180842751078],
-        [114.44437314095661, 30.44184017057037],
-        [114.44321531005517, 30.44179260003832],
-        [114.44189460594657, 30.44168262257633],
-        [114.44132920130312, 30.44333449477434],
-        [114.44091638950249, 30.44459896518103],
-        [114.43962745040858, 30.44865500262673],
-        [114.43959977067982, 30.44866181002234],
-        [114.43749901801516, 30.44819650107567],
-        [114.43556224657596, 30.44780064824837],
-        [114.43452094048041, 30.45056865769717],
-        [114.43312135883231, 30.45415484039208],
-        [114.44919207126907, 30.45718922816362],
-        [114.44685768117859, 30.46364660074411],
-        [114.44387730573249, 30.46302816887365],
-        [114.44315440452885, 30.46527411935537]
-    ], {
-        visible: false,
-        arrowStyle: 'classic',
-        arrowPlacement: 'vertex-last',
-        symbol: {
-            'lineColor': '#ff0000',
-            'lineWidth': 2
-        }
-    });
-
-    new maptalks.VectorLayer('line', line).addTo(map);
-
-    replay();
-
-    function replay() {
-        line.hide();
-        //line's animateShow
-        line.animateShow({
-            duration: 20000,
-            easing: 'out'
-        }, function (frame) {
-            if (frame.state.playState === 'finished') {
-                replay();
-            }
-        });
-    }
-
-    var point = new maptalks.Marker(
-        [114.45887007838064, 30.45193445860312],
-        {
-            symbol : {
-                'markerType' : 'ellipse',
-                'markerFill' : {
-                    'type' : 'radial',
-                    'colorStops' : [
-                        [0.00, 'rgba(216,115,149,0)'],
-                        [0.50, 'rgba(216,115,149,1)'],
-                        [1.00, 'rgba(216,115,149,1)']
-                    ]
-                },
-                'markerLineWidth' : 0,
-                'markerWidth' : 10,
-                'markerHeight' : 10
-            }
-        }
-    );
-
-    var player = point.animate({
-        'symbol':{
-            'markerWidth' : 100,
-            'markerHeight' : 100
-        }
-    },{
-        'duration' : 1500,
-        'easing' : 'inAndOut',
-        'repeat' : true
-    },function (frame) {
-        if (frame.state.playState === 'finished'){
-            console.log('animation finished');
-        }
-    });
-
-    player.play();
-
-    point.on('click',function (params) {
-        alert('报警');
-    });
-
-    new maptalks.VectorLayer('vectormarker',point).addTo(map);
-
-    maptalks.Ajax.getJSON('lines-bus.json', function(err, data) {
-        var hStep = 0.01;
-        var busLines = [].concat.apply([], data.map(function (busLine, idx) {
-            var prevPt = [];
-            var points = [];
-            for (var i = 0; i < busLine.length; i += 2) {
-                var pt = [busLine[i], busLine[i + 1]];
-                if (i > 0) {
-                    pt = [
-                        prevPt[0] + pt[0],
-                        prevPt[1] + pt[1]
-                    ];
-                }
-                prevPt = pt;
-
-                points.push([pt[0] / 1e4, pt[1] / 1e4]);
-            }
             return {
-                'coords': points,
-                'lineStyle': {
-                    'normal': {
-                        'color': echarts.color.modifyHSL('#5A94DF', Math.round(hStep * idx))
-                    }
-                }
+                tooltip: {
+                    trigger: 'item'
+                },
+                series: series
             };
-        }));
-        var ecOption = {
-            'series': [{
-                'type': 'lines',
-                'polyline': true,
-                'data': busLines,
-                'lineStyle': {
-                    'normal': {
-                        'width': 0
+        }
+
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: '进货量销量对比图',
+                left: 'center',
+                textStyle: {
+                    color: "#fff"
+                }
+            },
+            tooltip: {},
+            legend: {
+                data: ['销量', '进货量'],
+                textStyle: {
+                    color: "#fff"
+                },
+                top: 25
+            },
+            xAxis: {
+                data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"],
+                axisLabel: {
+                    color: "#fff"
+                }
+            },
+            yAxis: {
+                axisLabel: {
+                    color: "#fff"
+                }
+            },
+            series: [{
+                name: '销量',
+                type: 'bar',
+                data: [5, 20, 36, 10, 10, 20]
+            }, {
+                name: '进货量',
+                type: 'bar',
+                data: [10, 20, 40, 12, 10, 25],
+                itemStyle: {
+                    normal: {
+                        color: '#f5b031'
                     }
                 },
-                'effect': {
-                    'constantSpeed': 100,
-                    'show': true,
-                    'trailLength': 0.5,
-                    'symbolSize': 1.5
-                },
-                'zlevel': 1
             }]
         };
-        new maptalks.E3Layer('bus', ecOption, {
-            hideOnZooming: true,
-            hideOnRotating: true,
-            hideOnMoving: true
-        }).addTo(map);
-    });
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+
+        var index = 0; //播放所在下标
+        setInterval(function () {
+
+            if (index % 3 == 0) {
+                myChart.dispatchAction({
+                    type: 'legendSelect',       //选中图例。
+                    name: '销量'
+                });
+                myChart.dispatchAction({
+                    type: 'legendSelect',       //选中图例。
+                    name: '进货量'
+                });
+            } else if (index % 3 == 1) {
+                myChart.dispatchAction({
+                    type: 'legendSelect',       //选中图例。
+                    name: '销量'
+                });
+                myChart.dispatchAction({
+                    type: 'legendUnSelect',       //选中图例。
+                    name: '进货量'
+                });
+            } else if (index % 3 == 2) {
+                myChart.dispatchAction({
+                    type: 'legendUnSelect',       //选中图例。
+                    name: '销量'
+                });
+                myChart.dispatchAction({
+                    type: 'legendSelect',       //选中图例。
+                    name: '进货量'
+                });
+            }
 
 
-THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+            index++;
+            // if(index > 6) {
+            //     index = 0;
+            // }
+        }, 2000);
 
-var mtlLoaded = false;
-// the ThreeLayer to draw buildings
-var threeLayer = new maptalks.ThreeLayer('t');
-// prepare data, load mtl into three scene.
-threeLayer.prepareToDraw = function (gl, scene, camera) {
-    var light = new THREE.PointLight( 0xffffff );
-    light.position.copy(camera.position);
-    scene.add(light);
-    scene.add(new THREE.AmbientLight(0xffffff));// soft white light
-    var mtlLoader = new THREE.MTLLoader();
-    mtlLoader.setPath( '../libs/threejs/try/' );
-    mtlLoader.load( 'anjianju.mtl', function( materials ) {
-        materials.preload();
-        var objLoader = new THREE.OBJLoader();
-        objLoader.setMaterials( materials );
-        objLoader.setPath( '../libs/threejs/try/' );
-        objLoader.load( 'anjianju.obj', function ( object ) {
-            object.traverse( function ( child ) {
-                if ( child instanceof THREE.Mesh ) {
-                    child.scale.set(20, 20, 20);//调整加载模型的缩放比例
-                    child.rotation.set(Math.PI * 3 / 2, 0, 0);//调整模型的姿态，第二参数为绕模型Z轴旋转角度，参数单位为弧度
+        var myChart2 = echarts.init(document.getElementById('main2'));
+
+        var option2 = {
+            title: {
+                text: '天气情况统计',
+                left: 'center',
+                textStyle: {
+                    color: "#fff"
+                }
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            legend: {
+                // orient: 'vertical',
+                // top: 'middle',
+                bottom: 10,
+                left: 'center',
+                data: ['西凉', '益州', '兖州', '荆州', '幽州'],
+                textStyle: {
+                    color: "#fff"
+                }
+            },
+            series: [
+                {
+                    type: 'pie',
+                    radius: '65%',
+                    center: ['50%', '50%'],
+                    selectedMode: 'single',
+                    data: [
+                        { value: 1548, name: '幽州' },
+                        { value: 535, name: '荆州' },
+                        { value: 510, name: '兖州' },
+                        { value: 634, name: '益州' },
+                        { value: 735, name: '西凉' }
+                    ],
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+
+        var index2 = 0; //播放所在下标
+        setInterval(function () {
+            myChart2.dispatchAction({
+                type: 'pieUnSelect',        //取消选中指定的饼图扇形。
+                type: 'pieToggleSelect',    //切换指定的饼图扇形选中状态。
+                type: 'pieSelect',          //选中指定的饼图扇形。
+                seriesIndex: 0,
+                dataIndex: index2
+            });
+            index2++;
+            if (index2 > 5) {
+                index2 = 0;
+            }
+        }, 2000);
+
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart2.setOption(option2);
+
+        var bearing = 0;
+        var paused = false;
+        map.on("zoomend", function () {
+            if (map.getZoom() <= 15) {
+                changeView();
+                paused = false;
+                function changeView() {
+                    bearing += 0.1;
+                    map.setBearing(bearing);
+                    if (!paused) {
+                        requestAnimationFrame(changeView);
+                    }
+                }
+            } else {
+                requestAnimationFrame(function () {
+                    paused = true;
+                });
+            }
+        });
+
+
+        var label = new maptalks.Label('这是一个兴趣点',
+            [114.43408023528264, 30.441071006748956],
+            {
+                'draggable': true,
+                'textSymbol': {
+                    'textFaceName': 'monospace',
+                    'textFill': '#34495e',
+                    'textHaloFill': '#fff',
+                    'textHaloRadius': 4,
+                    'textSize': 18,
+                    'textWeight': 'bold',
+                    'textVerticalAlignment': 'top'
                 }
             });
-            var v = threeLayer.coordinateToVector3(new maptalks.Coordinate(114.46639910902582,30.451765835937152));
-            object.position.x = v.x;
-            object.position.y = v.y;
-            object.position.z = v.z;
-            scene.add(object);
-            mtlLoaded = true;
-            threeLayer.renderScene();
+        new maptalks.VectorLayer('vector', [label]).addTo(map);
+
+
+        var line = new maptalks.LineString([
+            [114.44549546619805, 30.44180842751078],
+            [114.44437314095661, 30.44184017057037],
+            [114.44321531005517, 30.44179260003832],
+            [114.44189460594657, 30.44168262257633],
+            [114.44132920130312, 30.44333449477434],
+            [114.44091638950249, 30.44459896518103],
+            [114.43962745040858, 30.44865500262673],
+            [114.43959977067982, 30.44866181002234],
+            [114.43749901801516, 30.44819650107567],
+            [114.43556224657596, 30.44780064824837],
+            [114.43452094048041, 30.45056865769717],
+            [114.43312135883231, 30.45415484039208],
+            [114.44919207126907, 30.45718922816362],
+            [114.44685768117859, 30.46364660074411],
+            [114.44387730573249, 30.46302816887365],
+            [114.44315440452885, 30.46527411935537]
+        ], {
+                visible: false,
+                arrowStyle: 'classic',
+                arrowPlacement: 'vertex-last',
+                symbol: {
+                    'lineColor': '#ff0000',
+                    'lineWidth': 2
+                }
+            });
+
+        new maptalks.VectorLayer('line', line).addTo(map);
+
+        replay();
+
+        function replay() {
+            line.hide();
+            //line's animateShow
+            line.animateShow({
+                duration: 20000,
+                easing: 'out'
+            }, function (frame) {
+                if (frame.state.playState === 'finished') {
+                    replay();
+                }
+            });
+        }
+
+        var point = new maptalks.Marker(
+            [114.45887007838064, 30.45193445860312],
+            {
+                symbol: {
+                    'markerType': 'ellipse',
+                    'markerFill': {
+                        'type': 'radial',
+                        'colorStops': [
+                            [0.00, 'rgba(216,115,149,0)'],
+                            [0.50, 'rgba(216,115,149,1)'],
+                            [1.00, 'rgba(216,115,149,1)']
+                        ]
+                    },
+                    'markerLineWidth': 0,
+                    'markerWidth': 10,
+                    'markerHeight': 10
+                }
+            }
+        );
+
+        var player = point.animate({
+            'symbol': {
+                'markerWidth': 100,
+                'markerHeight': 100
+            }
+        }, {
+                'duration': 1500,
+                'easing': 'inAndOut',
+                'repeat': true
+            }, function (frame) {
+                if (frame.state.playState === 'finished') {
+                    console.log('animation finished');
+                }
+            });
+
+        player.play();
+
+        point.on('click', function (params) {
+            alert('报警');
         });
-    });
-};
 
-threeLayer.draw = function () {
-    if (mtlLoaded) {
-        this.renderScene();
-    }
-};
+        new maptalks.VectorLayer('vectormarker', point).addTo(map);
 
-threeLayer.drawOnInteracting = function () {
-    if (mtlLoaded) {
-        this.renderScene();
-    }
-};
+        maptalks.Ajax.getJSON('lines-bus.json', function (err, data) {
+            var hStep = 0.01;
+            var busLines = [].concat.apply([], data.map(function (busLine, idx) {
+                var prevPt = [];
+                var points = [];
+                for (var i = 0; i < busLine.length; i += 2) {
+                    var pt = [busLine[i], busLine[i + 1]];
+                    if (i > 0) {
+                        pt = [
+                            prevPt[0] + pt[0],
+                            prevPt[1] + pt[1]
+                        ];
+                    }
+                    prevPt = pt;
 
-threeLayer.addTo(map);
+                    points.push([pt[0] / 1e4, pt[1] / 1e4]);
+                }
+                return {
+                    'coords': points,
+                    'lineStyle': {
+                        'normal': {
+                            'color': echarts.color.modifyHSL('#5A94DF', Math.round(hStep * idx))
+                        }
+                    }
+                };
+            }));
+            var ecOption = {
+                'series': [{
+                    'type': 'lines',
+                    'polyline': true,
+                    'data': busLines,
+                    'lineStyle': {
+                        'normal': {
+                            'width': 0
+                        }
+                    },
+                    'effect': {
+                        'constantSpeed': 100,
+                        'show': true,
+                        'trailLength': 0.5,
+                        'symbolSize': 1.5
+                    },
+                    'zlevel': 1
+                }]
+            };
+            new maptalks.E3Layer('bus', ecOption, {
+                hideOnZooming: true,
+                hideOnRotating: true,
+                hideOnMoving: true
+            }).addTo(map);
+        });
 
-</script>
+
+        THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader());
+
+        var mtlLoaded = false;
+        // the ThreeLayer to draw buildings
+        var threeLayer = new maptalks.ThreeLayer('t');
+
+        var raycaster = null;
+        var mouse = new THREE.Vector2();
+        // prepare data, load mtl into three scene.
+        threeLayer.prepareToDraw = function (gl, scene, camera) {
+            var light = new THREE.PointLight(0xffffff);
+            light.position.copy(camera.position);
+            scene.add(light);
+            scene.add(new THREE.AmbientLight(0xffffff));// soft white light
+            var mtlLoader = new THREE.MTLLoader();
+            mtlLoader.setPath('../libs/threejs/try/');
+            mtlLoader.load('anjianju.mtl', function (materials) {
+                materials.preload();
+                var objLoader = new THREE.OBJLoader();
+                objLoader.setMaterials(materials);
+                objLoader.setPath('../libs/threejs/try/');
+                objLoader.load('anjianju.obj', function (object) {
+                    object.traverse(function (child) {
+                        if (child instanceof THREE.Mesh) {
+                            child.scale.set(20, 20, 20);//调整加载模型的缩放比例
+                            child.rotation.set(Math.PI * 3 / 2, 0, 0);//调整模型的姿态，第二参数为绕模型Z轴旋转角度，参数单位为弧度
+                        }
+                    });
+                    var v = threeLayer.coordinateToVector3(new maptalks.Coordinate(114.46639910902582, 30.451765835937152));
+                    object.position.x = v.x;
+                    object.position.y = v.y;
+                    object.position.z = v.z;
+                    scene.add(object);
+                    mtlLoaded = true;
+                    threeLayer.renderScene();
+                });
+            });
+            raycaster = new THREE.Raycaster();
+        };
+
+        threeLayer.draw = function () {
+            if (mtlLoaded) {
+                this.renderScene();
+            }
+        };
+
+        threeLayer.drawOnInteracting = function () {
+            if (mtlLoaded) {
+                this.renderScene();
+            }
+        };
+
+        threeLayer.addTo(map);
+
+        map.on('click', function (e) {
+            if (raycaster != null) {
+                mouse.x = (e.containerPoint.x / window.innerWidth) * 2 - 1;
+                mouse.y = -(e.containerPoint.y / window.innerHeight) * 2 + 1;
+                raycaster.setFromCamera(mouse, threeLayer.getCamera());
+                var scene = threeLayer.getScene();
+                var intersects = raycaster.intersectObjects(scene.children, true);
+                console.log(intersects);
+                for (var i = 0; i < intersects.length; i++) {
+                    if (intersects[i].object.material.type === "MultiMaterial") {
+                        for (var j = 0; j < intersects[i].object.material.materials.length; j++) {
+                            intersects[i].object.material.materials[j].color.set(0x00ff00);
+                        }
+                    } else intersects[i].object.material.color.set(0x00ff00);
+                }
+            }
+        });
+
+    </script>
 </body>
 
 </html>
